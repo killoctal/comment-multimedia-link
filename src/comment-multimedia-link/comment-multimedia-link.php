@@ -59,7 +59,7 @@ function cml_attach_multimedialink($text)
 	{
 		$text .=
 			'<div class="multimedia-link">'
-				.'<a href="'.esc_attr($multimedialink).'" target="_blank">'.$multimedialink.'</a>'
+				.__('Multimedia link')': <a href="'.esc_attr($multimedialink).'" target="_blank">'.$multimedialink.'</a>'
 			.'</div>';
 	}
 	return $text;
