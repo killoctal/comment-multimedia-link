@@ -66,3 +66,55 @@ function cml_attach_multimedialink($text)
 	}
 	return $text;
 }
+
+
+
+// Admin editable: manage data
+add_filter( 'comment_edit_redirect',  'cml_admin_save', 10, 2 );
+function cml_admin_save( $location, $comment_id )
+{
+    // Not allowed, return regular value without updating meta
+    if (!wp_verify_nonce( $_POST['noncename_cml_admin'], plugin_basename( __FILE__ ))
+        && !isset($_POST['multimedialink'])) 
+	{
+        return $location;
+	}
+
+    // Update meta
+    update_comment_meta( 
+        $comment_id, 
+        'multimedialink', 
+        sanitize_text_field( $_POST['multimedialink'] ) 
+    );
+
+    // Return regular value after updating  
+    return $location;
+}
+
+
+// Admin editable: add box
+add_action( 'add_meta_boxes', 'cml_admin_addbox' );
+function cml_admin_addbox() 
+{
+    add_meta_box( 
+        'section_id_wpse_82317',
+        __( 'YouTube link' ),
+        'inner_custom_box_wpse_82317',
+        'comment',
+        'normal'
+    );
+}
+
+/**
+ * Render meta box with Custom Field 
+ */
+function inner_custom_box_wpse_82317( $comment ) 
+{
+    // Use nonce for verification
+    wp_nonce_field( plugin_basename( __FILE__ ), 'noncename_cml_admin' );
+
+    $c_meta = get_comment_meta( $comment->comment_ID, 'multimedialink', true );
+    echo "<input type='text' id='multimedialink' name='multimedialink' value='".esc_attr( $c_meta )."' size='100' />";
+}
+
+
